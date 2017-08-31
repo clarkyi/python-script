@@ -10,5 +10,5 @@ python clear-git-branch/clear_branch.py --help
 + python 2.7.13
 
 # 其他版本
-如若发现其他版本欢迎提[issues](https://github.com/clarkyi/python-script/issues)和提rq
+如若发现其他版本不支持，欢迎提[issues](https://github.com/clarkyi/python-script/issues)和提rq
 
