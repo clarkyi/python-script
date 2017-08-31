@@ -4,7 +4,7 @@
 
 ### Step1
 ```
-https://github.com/clarkyi/python-script.git 
+git clone https://github.com/clarkyi/python-script.git
 ```
 ### Step2
 ```
