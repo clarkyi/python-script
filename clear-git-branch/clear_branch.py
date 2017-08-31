@@ -11,7 +11,6 @@ class ClearBranch :
 
   def clear_branch(self, skip_branch, src):
     k_branchs = self.skip_branchs()
-    print(k_branchs)
     if not skip_branch in k_branchs :
       k_branchs.append(skip_branch)
     if src == "local" :
@@ -21,30 +20,36 @@ class ClearBranch :
 
   def clear_local(self, skip_branch):
     local_branchs = self.get_local_branchs()
-    branchs = local_branchs - skip_branch
+    branchs = list(set(local_branchs) - set(skip_branch))
     for branch in branchs :
-      # os.system("git branch -d " + branch)
-      print("deleted local ", branch)
+      os.system("git branch -d " + branch)
 
   def clear_origin(self, skip_branch):
     origin_branchs = self.get_origin_branchs()
-    branchs = origin_branchs - skip_branch
+    branchs = list(set(origin_branchs) - set(skip_branch))
     for branch in branchs :
-      # os.system("git branch -d origin " + branch)
-      print("deleted origin ", branch)    
+      os.system("git branch -d origin " + branch)
 
   def get_local_branchs(self):
-    os.popen("git branch").readlines()
+    result = os.popen("git branch").readlines()
+    branchs = []
+    for item in result:
+      branch = item.strip(' ').strip('* ').strip('\n')
+      branchs.append(branch)
+    return branchs
+
 
   def get_origin_branchs(self):
     result = os.popen("git branch -a | grep remotes").readlines()
     branchs = []
-    for branch in result:
-      branchs.append(branch.replace("remotes/origin/", ""))
+    for item in result:
+      branch = item.replace("remotes/origin/", "")
+      branch = branch.strip(' ').strip('* ').strip('\n')
+      branchs.append(branch)
     return branchs
 
   def valid_clear_env(self, arg):
-    arg in ["local", "origin"]
+    return arg in ["local", "origin"]
 
   def skip_branchs(self):
     current_branch = self.get_current()
@@ -54,21 +59,20 @@ class ClearBranch :
     return branchs
 
   def get_current(self):
-    result = os.popen("git name-rev --name-only HEAD").readlines()[0]
+    result = os.popen("git branch | grep \* | cut -d ' ' -f2").readlines()[0]
     return result.strip('\n')
 
   def in_project(self):
     result = os.popen("git branch").readlines()[0]
-    count = result.find("master")
-    if(count == -1):
+    count = result.find("Not a git repository")
+    if(count >= 0):
       print "not in project directory"
       sys.exit()
 
   def help(self):
-    print '≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈'
-    print 'python clear_branch.py help show method'
-    print 'python clear_branch.py clear -src=(local/origin, default: local)' +\
-          '-skip=(skip branch name default:current branch) not clear develop master'
+    print '-h          show help'
+    print '-src        local/origin, default: local'
+    print '-skip       skip branch name default:current branch not clear develop master'
     sys.exit()
 
   def clear(self, argv):
@@ -76,18 +80,24 @@ class ClearBranch :
     src = "local"
     skip_branch = self.get_current()
     try:
-      opts, args = getopt.getopt(argv,"hi:o:",["src=","skip="])
-    except getopt.GetoptError:
+      opts, args = getopt.getopt(argv,"ho:",["src=","skip=", "help"])
+    except getopt.GetoptError, e:
+      print("python args Illegal")
+      print("python clear_branch.py --src:local/origin -skip=branch_name ")
       self.help()
-      sys.exit(2)
     for opt, arg in opts :
-      if opt == '-src' and self.valid_clear_env(arg) :
-        src == arg 
-      elif opt == "skip" :
-        skip_branch == arg
-      elif opt == "help" :
+      if opt == '--src':
+        if self.valid_clear_env(arg):
+          src = arg
+        else:
+          print("args not unsupport:" + arg)
+          self.help()
+      elif opt == "--skip" :
+        skip_branch = arg
+      elif opt == "--help" :
         self.help()
-        sys.exit()
+      elif(opt == "-h"):
+        self.help()
     self.clear_branch(skip_branch, src)
 
 
