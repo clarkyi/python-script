@@ -21,13 +21,13 @@ class ClearBranch :
     local_branchs = self.get_local_branchs()
     branchs = list(set(local_branchs) - set(skip_branch))
     for branch in branchs :
-      os.system("git branch -d " + branch)
+      os.system("git branch -D " + branch)
 
   def clear_origin(self, skip_branch):
     origin_branchs = self.get_origin_branchs()
     branchs = list(set(origin_branchs) - set(skip_branch))
     for branch in branchs :
-      os.system("git branch -d origin " + branch)
+      os.system("git push origin :" + branch)
 
   def get_local_branchs(self):
     result = os.popen("git branch").readlines()
