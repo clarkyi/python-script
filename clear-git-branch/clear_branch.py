@@ -4,15 +4,14 @@
 # Copyright © 2017 Clarkyi clarkywq@gmail.com
 #
 # Distributed under terms of the MIT license.
-import os, re
-import sys, getopt
+import os, sys
+import re, getopt
 
 class ClearBranch :
 
   def clear_branch(self, skip_branch, src):
     k_branchs = self.skip_branchs()
-    if not skip_branch in k_branchs :
-      k_branchs.append(skip_branch)
+    k_branchs = list(set(k_branchs).union(set(skip_branch)))
     if src == "local" :
       self.clear_local(k_branchs)
     else :
@@ -59,8 +58,8 @@ class ClearBranch :
     return branchs
 
   def get_current(self):
-    result = os.popen("git branch | grep \* | cut -d ' ' -f2").readlines()[0]
-    return result.strip('\n')
+    branch = os.popen("git branch | grep \* | cut -d ' ' -f2").readlines()[0]
+    return branch.strip('\n')
 
   def in_project(self):
     result = os.popen("git branch").readlines()[0]
@@ -72,18 +71,17 @@ class ClearBranch :
   def help(self):
     print '-h          show help'
     print '-src        local/origin, default: local'
-    print '-skip       skip branch name default:current branch not clear develop master'
+    print '-skip       skip branch name default:current branch not clear develop master more than one split comma'
     sys.exit()
 
   def clear(self, argv):
     self.in_project()
     src = "local"
-    skip_branch = self.get_current()
+    skip_branch = [self.get_current()]
     try:
       opts, args = getopt.getopt(argv,"ho:",["src=","skip=", "help"])
     except getopt.GetoptError, e:
       print("python args Illegal")
-      print("python clear_branch.py --src:local/origin -skip=branch_name ")
       self.help()
     for opt, arg in opts :
       if opt == '--src':
@@ -93,12 +91,19 @@ class ClearBranch :
           print("args not unsupport:" + arg)
           self.help()
       elif opt == "--skip" :
-        skip_branch = arg
+        skip_branch = arg.split(",")
       elif opt == "--help" :
         self.help()
       elif(opt == "-h"):
         self.help()
     self.clear_branch(skip_branch, src)
+
+  def union_array(self, source, elems):
+    for elem in elems:
+      if not elem in source:
+        source.append(elem)
+    return source
+
 
 
 cb = ClearBranch()
