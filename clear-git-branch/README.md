@@ -23,5 +23,5 @@ clear_br.py --help
 
 
 ## ISSUES
-如若发现其他版本欢迎提[issues](https://github.com/clarkyi/python-script/issues)和提rq
+如若发现其他版本欢迎提[issues](https://github.com/clarkyi/python-script/issues)和提pull request
 
