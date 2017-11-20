@@ -10,7 +10,7 @@ import re, getopt
 class ClearBranch :
 
   def clear_branch(self, skip_branch, src):
-    k_branchs = self.skip_branchs()
+    k_branchs = self.default_skip_br()
     k_branchs = list(set(k_branchs).union(set(skip_branch)))
     if src == "local" :
       self.clear_local(k_branchs)
@@ -50,7 +50,20 @@ class ClearBranch :
   def valid_clear_env(self, arg):
     return arg in ["local", "origin"]
 
-  def skip_branchs(self):
+  def skip_branchs(self, regex, source):
+    print "here"
+    if regex.find("re:") == -1 :
+      return regex.split(",")
+    branchs = []
+    branch_list = (self.get_local_branchs() if source == "local" else self.get_origin_branchs())
+    regex = regex.replace("re:", "")
+    for branch in branch_list:
+      match_bject = re.search(regex, branch)
+      if not match_bject is None :
+        branchs.append(branch)
+    return branchs
+
+  def default_skip_br(self) :
     current_branch = self.get_current()
     branchs = ["develop", "master"]
     if not current_branch in branchs :
@@ -69,9 +82,9 @@ class ClearBranch :
       sys.exit()
 
   def help(self):
-    print '-h          show help'
-    print '-src        local/origin, default: local'
-    print '-skip       skip branch name default:current branch not clear develop master more than one split comma'
+    print '-h(--help)      show help'
+    print '--src           local/origin, default: local'
+    print '--skip          skip branch name default:current branch not clear develop master more than one split comma\n\t\tusage regex as: --skip=re:match pattern'
     sys.exit()
 
   def clear(self, argv):
@@ -91,7 +104,7 @@ class ClearBranch :
           print("args not unsupport:" + arg)
           self.help()
       elif opt == "--skip" :
-        skip_branch = arg.split(",")
+        skip_branch = self.skip_branchs(arg, src)
       elif opt == "--help" :
         self.help()
       elif(opt == "-h"):
@@ -103,8 +116,6 @@ class ClearBranch :
       if not elem in source:
         source.append(elem)
     return source
-
-
 
 cb = ClearBranch()
 cb.clear(sys.argv[1:])
