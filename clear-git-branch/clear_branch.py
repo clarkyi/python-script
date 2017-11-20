@@ -67,8 +67,8 @@ class ClearBranch :
   def help(self):
     print '≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈≈'
     print 'python clear_branch.py help show method'
-    print 'python clear_branch.py clear -src=(local/origin, default: local)' +\
-          '-skip=(skip branch name default:current branch) not clear develop master'
+    print 'python clear_branch.py clear --src=(local/origin, default: local)' +\
+          '--skip=(skip branch name default:current branch) not clear develop master'
     sys.exit()
 
   def clear(self, argv):
