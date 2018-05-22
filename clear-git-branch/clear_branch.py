@@ -51,7 +51,6 @@ class ClearBranch :
     return arg in ["local", "origin"]
 
   def skip_branchs(self, regex, source):
-    print "here"
     if regex.find("re:") == -1 :
       return regex.split(",")
     branchs = []
