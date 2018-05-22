@@ -19,6 +19,7 @@ clear_br.py --help
 as
 ```
 clear_br.py --src=local --skip=feature/1.0.0
+```
 
 ## 测试所依赖的版本如下
 + git  2.2.2
