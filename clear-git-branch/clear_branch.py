@@ -24,6 +24,7 @@ class ClearBranch :
       os.system("git branch -D " + branch)
 
   def clear_origin(self, skip_branch):
+    os.system("git fetch")
     origin_branchs = self.get_origin_branchs()
     branchs = list(set(origin_branchs) - set(skip_branch))
     for branch in branchs :
