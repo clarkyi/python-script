@@ -20,14 +20,16 @@ class ClearBranch :
   def clear_local(self, skip_branch):
     local_branchs = self.get_local_branchs()
     branchs = list(set(local_branchs) - set(skip_branch))
-    for branch in branchs :
-      os.system("git branch -D " + branch)
+    branch_str = " ".join(branchs)
+    os.system("git branch -D " + branch_str)
+    print("finish")
 
   def clear_origin(self, skip_branch):
     origin_branchs = self.get_origin_branchs()
     branchs = list(set(origin_branchs) - set(skip_branch))
-    for branch in branchs :
-      os.system("git push origin :" + branch)
+    branch_str = " :".join(branchs)
+    os.system("git push origin :" + branch_str)
+    print("finish")
 
   def get_local_branchs(self):
     result = os.popen("git branch").readlines()
@@ -42,7 +44,8 @@ class ClearBranch :
     result = os.popen("git branch -a | grep remotes").readlines()
     branchs = []
     for item in result:
-      branch = item.replace("remotes/origin/", "")
+      strinfo = re.compile('remotes.*origin/')
+      branch = strinfo.sub('', item)
       branch = branch.strip(' ').strip('* ').strip('\n')
       branchs.append(branch)
     return branchs
